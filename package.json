@@ -1,0 +1,27 @@
+{
+  "name": "automatically-create-meeting-notes",
+  "version": "0.0.1",
+  "description": "create notion page",
+  "main": "index.ts",
+  "repository": "https://github.com/tosite/acnp.git",
+  "author": "tosite <tl091264@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node ./index.ts"
+  },
+  "dependencies": {
+    "@notionhq/client": "^0.2.1",
+    "@slack/webhook": "^6.0.0",
+    "@typescript-eslint/parser": "^4.28.2",
+    "dayjs": "^1.10.6",
+    "dotenv": "^10.0.0",
+    "eslint": "^7.30.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.5"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.28.2",
+    "prettier": "^2.3.2"
+  }
+}
