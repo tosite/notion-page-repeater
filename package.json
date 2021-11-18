@@ -1,13 +1,21 @@
 {
-  "name": "automatically-create-meeting-notes",
+  "name": "notion-page-repeater",
   "version": "0.0.1",
-  "description": "create notion page",
-  "main": "index.ts",
-  "repository": "https://github.com/tosite/acnp.git",
+  "description": "Notion Automatically Create Repeat Pages",
+  "main": "dist/main.js",
+  "files": [
+    "dist/"
+  ],
+  "repository": "https://github.com/tosite/notion-page-repeater.git",
   "author": "tosite <tl091264@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node ./index.ts"
+    "start": "ts-node ./index.ts",
+    "dev": "webpack --mode development",
+    "build": "webpack --mode production"
+  },
+  "bin": {
+    "nrepeat": "dist/main.js"
   },
   "dependencies": {
     "@notionhq/client": "^0.2.1",
@@ -17,8 +25,12 @@
     "dotenv": "^10.0.0",
     "eslint": "^7.30.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
+    "lodash": "^4.17.21",
+    "ts-loader": "^9.2.6",
     "ts-node": "^10.0.0",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5",
+    "webpack": "^5.64.1",
+    "webpack-cli": "^4.9.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.28.2",
