@@ -77,7 +77,7 @@ s->cron:end of process\n処理終了
 
 </div></details>
 
-![sequence](docs/sequence.svg)
+![sequence](https://github.com/tosite/notion-page-repeater/blob/main/docs/sequence.svg)
 
 ## Pages information
 
