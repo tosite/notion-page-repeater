@@ -8,6 +8,6 @@
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "strict": true,
-    "noEmit": true,
+    "noEmit": false,
   }
 }
