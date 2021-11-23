@@ -2,10 +2,10 @@
 
 ```puml
 @startuml
-title Generate recurring pages in Notion
+title Notion-page-repeater
 
 participant cron
-control nacrep as s
+control "Notion-page-repeater" as s
 
 database SettingPage as sp
 
