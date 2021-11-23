@@ -1,5 +1,11 @@
 # notion-page-repeater
 
+<div style="text-align: center;">
+
+![logo](./docs/logo.png)
+
+</div>
+
 ## Documents
 - [Sequence](./docs/uml.md)
 - [japanese docs](docs/jp.md)
