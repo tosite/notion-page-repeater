@@ -4,6 +4,8 @@ on:
     branches:
       - main
   pull_request:
+    branches:
+      - main
 
 jobs:
   sync:
@@ -13,7 +15,7 @@ jobs:
       TZ: Asia/Tokyo
       LANG: ja_JP.UTF-8
     steps:
-      - run: apt -qqy update && apt -qqy install unzip
+      - run: which unzip > /dev/null || (apt -qqy update && apt -qqy install unzip)
       - uses: actions/checkout@v2
       - uses: denoland/setup-deno@v1
         with:
