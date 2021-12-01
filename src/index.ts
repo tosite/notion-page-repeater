@@ -1,16 +1,13 @@
-import dotenv from 'dotenv'
-import {Client, LogLevel} from '@notionhq/client/build/src'
+import { Client, LogLevel } from '@notionhq/client/build/src'
 import dayjs from 'dayjs'
-import {IncomingWebhook} from '@slack/webhook'
-
-dotenv.config()
+import { IncomingWebhook } from '@slack/webhook'
 
 const notion = new Client({
   auth: process.env.NOTION_TOKEN,
   logLevel: LogLevel.INFO,
 })
 const url: string = process.env.SLACK_WEBHOOK_URL || ''
-const slack = new IncomingWebhook(url, {icon_emoji: ':notion:'})
+const slack = new IncomingWebhook(url, { icon_emoji: ':memo:' })
 const settingDbId = process.env.SETTING_DB_ID
 let domain = ''
 
@@ -53,7 +50,7 @@ interface PageEntity {
         start: string
         end: string
       }
-    },
+    }
     Members: {
       id: string
       type: string
@@ -82,12 +79,18 @@ const main = async () => {
 
     // 実行対象が今日・明日のものだけを取得
     if (
-      setting.runAt.format('YYYYMMDD') !== dayjs().format('YYYYMMDD')
-      && setting.runAt.format('YYYYMMDD') !== dayjs().add(1, 'day').format('YYYYMMDD')
+      setting.runAt.format('YYYYMMDD') !== dayjs().format('YYYYMMDD') &&
+      setting.runAt.format('YYYYMMDD') !== dayjs().add(1, 'day').format('YYYYMMDD')
     ) {
       continue
     }
-    console.log((!prevRunAt ? 'not set' : prevRunAt.format('YYYY-MM-DD HH:mm')), ' <=> ', setting.runAt.format('YYYY-MM-DD HH:mm'), 'isSame = ', prevRunAt !== null && setting.runAt.format('YYYYMMDDHHmm') === prevRunAt.format('YYYYMMDDHHmm'))
+    console.log(
+      !prevRunAt ? 'not set' : prevRunAt.format('YYYY-MM-DD HH:mm'),
+      ' <=> ',
+      setting.runAt.format('YYYY-MM-DD HH:mm'),
+      'isSame = ',
+      prevRunAt !== null && setting.runAt.format('YYYYMMDDHHmm') === prevRunAt.format('YYYYMMDDHHmm'),
+    )
     // 日付と1つ前のIDから該当のページがすでに作成済みかどうか判定する
     if (prevRunAt !== null && setting.runAt.format('YYYYMMDDHHmm') === prevRunAt.format('YYYYMMDDHHmm')) {
       console.log('[SKIP]page is already exist.')
@@ -122,7 +125,7 @@ const main = async () => {
     }
 
     // テンプレートページを元に新しいページを作成する
-    const newPageId = await createPage(setting, templateParams, parentDbId, title)
+    const newPageId = await createPage(setting, templateParams, parentDbId)
     if (newPageId === '') {
       await notifyErrorToSlack('新しいページが作成できませんでした', title)
       console.log('[ERROR]Failed creating new page.')
@@ -133,30 +136,28 @@ const main = async () => {
     await updatePrevId(setting.id, newPageId)
     const uri = `${domain}/${newPageId.replace(/-/g, '')}`
     try {
-      await slack.send(
-        {
-          text: `MTGノートを作成しました！\n[ *title:${title}* ]\nurl :point_right: https://${uri}\nnotion :point_right: notion://${uri}`
-        }
-      )
-    } catch (e) {
+      await slack.send({
+        text: `MTGノートを作成しました！\n[ *title:${title}* ]\nurl :point_right: https://${uri}\nnotion :point_right: notion://${uri}`,
+      })
+    } catch {
       // noop
     }
     console.log('==== finish creating page =========')
   }
 }
 
-const createPage = async (setting: SettingEntity, templateParams: any, parentDbId: string, title: string) => {
+const createPage = async (setting: SettingEntity, templateParams: any, parentDbId: string) => {
   try {
     templateParams['Datetime'] = {
       date: {
         start: setting.runAt.format('YYYY-MM-DDTHH:mm:ss+0900'),
-      }
+      },
     }
     const page: any = await notion.pages.create({
-      parent: {database_id: parentDbId},
-      properties: templateParams
+      parent: { database_id: parentDbId },
+      properties: templateParams,
     })
-    return (!page || Object.keys(page).length === 0 || !page['id']) ? '' : page['id']
+    return !page || Object.keys(page).length === 0 || !page['id'] ? '' : page['id']
   } catch (e) {
     console.log(e)
     return ''
@@ -172,10 +173,10 @@ const fetchSettings = async () => {
       // @ts-ignore
       database_id: settingDbId,
       filter: {
-        and: [{property: 'enable', checkbox: {equals: true}}],
+        and: [{ property: 'enable', checkbox: { equals: true } }],
       },
       start_cursor: nextCursor,
-      page_size: 100
+      page_size: 100,
     })
     if (!pages || Object.keys(pages).length === 0 || !pages['results']) {
       continue
@@ -241,50 +242,27 @@ const updatePrevId = async (id: string, prevId: string) => {
   }
   try {
     // @ts-ignore
-    const page: { properties: { 'previous_id': { rich_text: { type: string, text: { content: string } }[] } } } = await notion.pages.update({
-      page_id: id,
-      properties: {
-        // @ts-ignore
-        'previous_id': {
-          rich_text: [
-            {
-              type: 'text',
-              text: {
-                content: prevId,
-              }
-            }
-          ]
-        }
-      }
-    })
+    const page: { properties: { previous_id: { rich_text: { type: string; text: { content: string } }[] } } } =
+      await notion.pages.update({
+        page_id: id,
+        properties: {
+          // @ts-ignore
+          previous_id: {
+            rich_text: [
+              {
+                type: 'text',
+                text: {
+                  content: prevId,
+                },
+              },
+            ],
+          },
+        },
+      })
     return page && page.properties['previous_id']['rich_text'][0]['text']['content'] === prevId
-  } catch (e) {
+  } catch {
     return
   }
-}
-
-const parseMultiSelect = (property: any): { name: string }[] => {
-  if (!property || typeof property['multi_select'] === 'undefined') {
-    return []
-  }
-  const tags = []
-  const multiSelect: { name: string }[] = property['multi_select']
-  for (const p of multiSelect) {
-    tags.push({name: p.name})
-  }
-  return tags
-}
-
-const parsePerson = (property: any): { id: string }[] => {
-  if (!property || typeof property['people'] === 'undefined') {
-    return []
-  }
-  const memberIds = []
-  const person: { id: string }[] = property['people']
-  for (const p of person) {
-    memberIds.push({id: p.id})
-  }
-  return memberIds
 }
 
 const parseSelect = <T>(property: any): T | null => {
@@ -303,7 +281,12 @@ const parseNumber = (property: any, defaultValue = 0): number => {
 }
 
 const parseTitle = (property: any, defaultValue = ''): string => {
-  if (!property || !property['title'] || !property['title'][0] || typeof property['title'][0]['plain_text'] === 'undefined') {
+  if (
+    !property ||
+    !property['title'] ||
+    !property['title'][0] ||
+    typeof property['title'][0]['plain_text'] === 'undefined'
+  ) {
     return defaultValue
   }
   const text: string = property['title'][0]['plain_text']
@@ -324,20 +307,13 @@ const parseText = (property: any, defaultValue = ''): string => {
   return text || defaultValue
 }
 
-const parseBoolean = (property: any, defaultValue = false): boolean => {
-  if (!property || typeof property['checkbox'] === 'undefined') {
-    return defaultValue
-  }
-  return property['checkbox']
-}
-
 const fetchPage = async (id: string) => {
   let page: any = null
   try {
     page = await notion.pages.retrieve({
       page_id: id,
     })
-  } catch (e) {
+  } catch {
     return null
   }
   if (!page || Object.keys(page).length === 0) {
@@ -353,12 +329,10 @@ const fetchPage = async (id: string) => {
 
 const notifyErrorToSlack = async (text: string, title: string) => {
   try {
-    await slack.send(
-      {
-        text: `${text}:cry:\n[ *title:${title}* ]`
-      }
-    )
-  } catch (e) {
+    await slack.send({
+      text: `${text}:cry:\n[ *title:${title}* ]`,
+    })
+  } catch {
     // noop
   }
 }

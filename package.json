@@ -22,7 +22,6 @@
     "@slack/webhook": "^6.0.0",
     "@typescript-eslint/parser": "^4.28.2",
     "dayjs": "^1.10.6",
-    "dotenv": "^10.0.0",
     "eslint": "^7.30.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "lodash": "^4.17.21",
