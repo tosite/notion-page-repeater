@@ -62,13 +62,12 @@ jobs:
   sync:
     name: Notion Page Repeater
     runs-on: ubuntu-latest
-    container: node:latest
     env:
       TZ: Asia/Tokyo
       LANG: ja_JP.UTF-8
     steps:
       - name: Sync
-        uses: tosite/notion-page-repeater@v1.0
+        uses: tosite/notion-page-repeater@v1
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
