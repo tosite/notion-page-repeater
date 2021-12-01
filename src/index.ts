@@ -261,23 +261,28 @@ const updatePrevId = async (id: string, prevId: string) => {
   }
   try {
     // @ts-ignore
-    const page: { properties: { previous_id: { rich_text: { type: string; text: { content: string } }[] } } } =
-      await notion.pages.update({
-        page_id: id,
-        properties: {
-          // @ts-ignore
-          previous_id: {
-            rich_text: [
-              {
-                type: 'text',
-                text: {
-                  content: prevId,
-                },
+    const page: {
+      properties: {
+        previous_id: {
+          rich_text: { type: string; text: { content: string } }[]
+        }
+      }
+    } = await notion.pages.update({
+      page_id: id,
+      properties: {
+        // @ts-ignore
+        previous_id: {
+          rich_text: [
+            {
+              type: 'text',
+              text: {
+                content: prevId,
               },
-            ],
-          },
+            },
+          ],
         },
-      })
+      },
+    })
     return page && page.properties['previous_id']['rich_text'][0]['text']['content'] === prevId
   } catch {
     return
