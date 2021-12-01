@@ -8,7 +8,7 @@ on:
       - main
 
 jobs:
-  sync:
+  deno-test:
     name: Deno Test
     runs-on: ubuntu-latest
     env:
