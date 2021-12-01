@@ -1,11 +1,16 @@
 export class Slack {
   private webhookUrl: string
+  private fetcher = fetch
 
-  constructor(url?: string) {
-    if (!url) {
-      throw 'Slack Incoming Webhook URL is empty'
+  constructor(arg: { url?: string; fetcher?: typeof fetch }) {
+    if (!arg.url) {
+      throw Error('Slack Incoming Webhook URL is empty')
     }
-    this.webhookUrl = url
+    this.webhookUrl = arg.url
+
+    if (arg.fetcher) {
+      this.fetcher = arg.fetcher
+    }
   }
 
   async send(arg: { text?: string }) {
@@ -20,7 +25,7 @@ export class Slack {
         },
       ],
     }
-    await fetch(this.webhookUrl, {
+    await this.fetcher(this.webhookUrl, {
       method: 'post',
       body: JSON.stringify(payload),
     })

@@ -4,7 +4,7 @@ import { okMessage, ngMessage } from './util.ts'
 import { Slack } from './slack.ts'
 import { fetchSettings, fetchPage, createPage, updatePrevId } from './notion.ts'
 
-const slack = new Slack(Deno.env.get('SLACK_WEBHOOK_URL'))
+const slack = new Slack({ url: Deno.env.get('SLACK_WEBHOOK_URL') })
 const notion = new Client({ auth: Deno.env.get('NOTION_TOKEN') })
 const settingDbId = Deno.env.get('SETTING_DB_ID')
 if (!settingDbId) {
