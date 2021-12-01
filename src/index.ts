@@ -1,14 +1,33 @@
-import { Client, LogLevel } from '@notionhq/client/build/src'
-import dayjs from 'dayjs'
-import { IncomingWebhook } from '@slack/webhook'
+// deno-lint-ignore-file no-explicit-any camelcase ban-ts-comment
+import { Client } from 'https://deno.land/x/notion_sdk/src/mod.ts'
+import dayjs from 'https://cdn.skypack.dev/dayjs?dts'
 
 const notion = new Client({
-  auth: process.env.NOTION_TOKEN,
-  logLevel: LogLevel.INFO,
+  auth: Deno.env.get('NOTION_TOKEN'),
 })
-const url: string = process.env.SLACK_WEBHOOK_URL || ''
-const slack = new IncomingWebhook(url, { icon_emoji: ':memo:' })
-const settingDbId = process.env.SETTING_DB_ID
+
+const url = Deno.env.get('SLACK_WEBHOOK_URL') || ''
+const slack = {
+  send: async (arg: { text?: string }) => {
+    const payload = {
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: arg.text,
+          },
+        },
+      ],
+    }
+    await fetch(url, {
+      method: 'post',
+      body: JSON.stringify(payload),
+    })
+  },
+}
+
+const settingDbId = Deno.env.get('SETTING_DB_ID') || ''
 let domain = ''
 
 const weekList = {
@@ -328,9 +347,7 @@ const fetchPage = async (id: string) => {
 
 const notifyErrorToSlack = async (text: string, title: string) => {
   try {
-    await slack.send({
-      text: `${text}:cry:\n[ *title:${title}* ]`,
-    })
+    await slack.send({ text: `${text}:cry:\n[ *title:${title}* ]` })
   } catch {
     // noop
   }
