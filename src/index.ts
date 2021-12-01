@@ -7,7 +7,7 @@ const notion = new Client({
   logLevel: LogLevel.INFO,
 })
 const url: string = process.env.SLACK_WEBHOOK_URL || ''
-const slack = new IncomingWebhook(url, { icon_emoji: ':notion:' })
+const slack = new IncomingWebhook(url, { icon_emoji: ':memo:' })
 const settingDbId = process.env.SETTING_DB_ID
 let domain = ''
 
