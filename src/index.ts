@@ -1,97 +1,21 @@
-// deno-lint-ignore-file no-explicit-any
 import { Client } from 'https://deno.land/x/notion_sdk/src/mod.ts'
 import dayjs from 'https://cdn.skypack.dev/dayjs?dts'
+import { okMessage, ngMessage } from './util.ts'
+import { Slack } from './slack.ts'
+import { fetchSettings, fetchPage, createPage, updatePrevId } from './notion.ts'
 
-const notion = new Client({
-  auth: Deno.env.get('NOTION_TOKEN'),
-})
-
-const url = Deno.env.get('SLACK_WEBHOOK_URL') || ''
-const slack = {
-  send: async (arg: { text?: string }) => {
-    const payload = {
-      blocks: [
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: arg.text,
-          },
-        },
-      ],
-    }
-    await fetch(url, {
-      method: 'post',
-      body: JSON.stringify(payload),
-    })
-  },
-}
-
-const settingDbId = Deno.env.get('SETTING_DB_ID') || ''
-let domain = ''
-
-const weekList = {
-  Sun: 0,
-  Mon: 1,
-  Tue: 2,
-  Wed: 3,
-  Thu: 4,
-  Fri: 5,
-  Sat: 6,
-}
-
-type Week = keyof typeof weekList
-type Span = 'daily' | 'weekly'
-
-interface SettingEntity {
-  id: string
-  runAt: any
-  title: string
-  prevId: string
-  templateId: string
-}
-
-interface PageEntity {
-  results: any
-  // deno-lint-ignore camelcase
-  next_cursor: string | null
-  // deno-lint-ignore camelcase
-  has_more: boolean
-}
-
-interface PageEntity {
-  archived: boolean
-  parent: {
-    type: string
-    // deno-lint-ignore camelcase
-    database_id: string
-  }
-  properties: {
-    Datetime: {
-      date: {
-        start: string
-        end: string
-      }
-    }
-    Members: {
-      id: string
-      type: string
-      people: string[]
-    }
-    Tags: {
-      id: string
-      type: string
-      // deno-lint-ignore camelcase
-      multi_select: string[]
-    }
-  }
+const slack = new Slack(Deno.env.get('SLACK_WEBHOOK_URL'))
+const notion = new Client({ auth: Deno.env.get('NOTION_TOKEN') })
+const settingDbId = Deno.env.get('SETTING_DB_ID')
+if (!settingDbId) {
+  throw 'SETTING_DB_ID is empty'
 }
 
 const main = async () => {
-  const settings = await fetchSettings()
-  for (const setting of settings) {
+  const settings = await fetchSettings(notion, settingDbId)
+  for (const setting of settings.entries) {
     console.log('==== start creating page ========')
-    const prevPage = await fetchPage(setting.prevId)
+    const prevPage = await fetchPage(notion, setting.prevId)
     let prevRunAt = null
     if (prevPage !== null) {
       const datetimeProperty = prevPage.properties['Datetime']
@@ -123,18 +47,18 @@ const main = async () => {
 
     // テンプレートページを取得・整形
     if (setting.templateId === '') {
-      await notifyErrorToSlack('テンプレートページが見つかりませんでした', title)
+      await slack.send(ngMessage('テンプレートページが見つかりませんでした', title)).catch(() => {})
       console.log('[ERROR]template ID is empty.')
       continue
     }
-    const templatePage = await fetchPage(setting.templateId)
+    const templatePage = await fetchPage(notion, setting.templateId)
     if (!templatePage) {
-      await notifyErrorToSlack('テンプレートページが見つかりませんでした', title)
+      await slack.send(ngMessage('テンプレートページが見つかりませんでした', title)).catch(() => {})
       console.log('[ERROR]template ID is invalid.')
       continue
     }
     if (templatePage.parent.type !== 'database_id' || !templatePage.parent.database_id) {
-      await notifyErrorToSlack('親データベースIDが見つかりませんでした', title)
+      await slack.send(ngMessage('親データベースIDが見つかりませんでした', title)).catch(() => {})
       console.log('[ERROR]parent database ID is invalid.')
       continue
     }
@@ -142,228 +66,38 @@ const main = async () => {
     const templateParams = templatePage.properties
 
     if (!templateParams) {
-      await notifyErrorToSlack('テンプレートページの取得に失敗しました', title)
+      await slack.send(ngMessage('テンプレートページの取得に失敗しました', title)).catch(() => {})
       console.log('[ERROR]template-params parse error.')
       continue
     }
 
     // テンプレートページを元に新しいページを作成する
-    const newPageId = await createPage(setting, templateParams, parentDbId)
+    const newPageId = await createPage(notion, setting, templateParams, parentDbId)
     if (newPageId === '') {
-      await notifyErrorToSlack('新しいページが作成できませんでした', title)
+      await slack.send(ngMessage('新しいページが作成できませんでした', title)).catch(() => {})
       console.log('[ERROR]Failed creating new page.')
       continue
     }
 
     // 新しいページIDで設定を上書き
-    await updatePrevId(setting.id, newPageId)
-    const uri = `${domain}/${newPageId.replace(/-/g, '')}`
-    try {
-      await slack.send({
-        text: `MTGノートを作成しました！\n[ *title:${title}* ]\nurl :point_right: https://${uri}\nnotion :point_right: notion://${uri}`,
-      })
-    } catch {
-      // noop
-    }
+    await updatePrevId(notion, setting.id, newPageId)
+    const uri = `${settings.domain}/${newPageId.replace(/-/g, '')}`
+    await slack
+      .send(
+        okMessage(
+          [
+            `MTGノートを作成しました！`,
+            `[ *title:${title}* ]`,
+            `url 👉 https://${uri}`,
+            `notion 👉 notion://${uri}`,
+          ].join('\n'),
+        ),
+      )
+      .catch(() => {})
     console.log('==== finish creating page =========')
   }
 }
 
-const createPage = async (setting: SettingEntity, templateParams: any, parentDbId: string) => {
-  try {
-    templateParams['Datetime'] = {
-      date: {
-        start: setting.runAt.format('YYYY-MM-DDTHH:mm:ss+0900'),
-      },
-    }
-    const page: any = await notion.pages.create({
-      parent: { database_id: parentDbId },
-      properties: templateParams,
-    })
-    return !page || Object.keys(page).length === 0 || !page['id'] ? '' : page['id']
-  } catch (e) {
-    console.log(e)
-    return ''
-  }
-}
-
-const fetchSettings = async () => {
-  const target: SettingEntity[] = []
-  let nextCursor = undefined
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const pages: any = await notion.databases.query({
-      database_id: settingDbId,
-      filter: {
-        and: [{ property: 'enable', checkbox: { equals: true } }],
-      },
-      start_cursor: nextCursor,
-      page_size: 100,
-    })
-    if (!pages || Object.keys(pages).length === 0 || !pages['results']) {
-      continue
-    }
-    const pgs: PageEntity = pages
-    for (const p of pgs.results) {
-      const id: string = p['id']
-      if (domain === '') {
-        const d = p['url'].split('/')
-        domain = d[2]
-      }
-      const setting: SettingEntity = parseSettingEntity(id, p.properties)
-      if (setting.runAt !== null) {
-        target.push(setting)
-      }
-    }
-    nextCursor = pages['next_cursor']
-    if (!nextCursor) {
-      return target
-    }
-  }
-}
-
-const parseNextRunAt = (span: Span, week: Week, hour: number, min: number): any => {
-  const now = dayjs()
-
-  if (span === 'daily') {
-    return now.add(1, 'day').hour(hour).minute(min)
-  }
-
-  if (span === 'weekly') {
-    let dateDiff = weekList[week] ? weekList[week] - now.day() : 0
-    if (dateDiff < 0) {
-      dateDiff = 7 + dateDiff
-    }
-    return now.add(dateDiff, 'day').hour(hour).minute(min)
-  }
-
-  return null
-}
-
-const parseSettingEntity = (id: string, properties: any): SettingEntity => {
-  const span = parseSelect<Span>(properties['interval']) || 'weekly'
-  const week = parseSelect<Week>(properties['week'])
-  const hour: number = parseNumber(properties['hour'], 12)
-  const min: number = parseNumber(properties['minute'], 0)
-  const title: string = parseTitle(properties['title'], '議事録タイトル')
-  const prevId: string = parseText(properties['previous_id'])
-  const templateId: string = parseText(properties['template_id'])
-
-  if (week === null) {
-    throw 'invalid week'
-  }
-
-  return {
-    id: id,
-    runAt: parseNextRunAt(span, week, hour, min),
-    title: title,
-    prevId: prevId,
-    templateId: templateId,
-  }
-}
-
-const updatePrevId = async (id: string, prevId: string) => {
-  if (!prevId) {
-    return
-  }
-  try {
-    // @ts-ignore
-    const page: {
-      properties: {
-        previous_id: {
-          rich_text: { type: string; text: { content: string } }[]
-        }
-      }
-    } = await notion.pages.update({
-      page_id: id,
-      properties: {
-        previous_id: {
-          rich_text: [
-            {
-              type: 'text',
-              text: {
-                content: prevId,
-              },
-            },
-          ],
-        },
-      },
-    })
-    return page && page.properties['previous_id']['rich_text'][0]['text']['content'] === prevId
-  } catch {
-    return
-  }
-}
-
-const parseSelect = <T>(property: any): T | null => {
-  if (!property || !property['select'] || typeof property['select']['name'] === 'undefined') {
-    return null
-  }
-  return property['select']['name']
-}
-
-const parseNumber = (property: any, defaultValue = 0): number => {
-  if (!property || typeof property['number'] === 'undefined') {
-    return defaultValue
-  }
-  return property['number']
-}
-
-const parseTitle = (property: any, defaultValue = ''): string => {
-  if (
-    !property ||
-    !property['title'] ||
-    !property['title'][0] ||
-    typeof property['title'][0]['plain_text'] === 'undefined'
-  ) {
-    return defaultValue
-  }
-  const text: string = property['title'][0]['plain_text']
-  return text || defaultValue
-}
-
-const parseText = (property: any, defaultValue = ''): string => {
-  if (
-    !property ||
-    !property['rich_text'] ||
-    !property['rich_text'][0] ||
-    !property['rich_text'][0]['text'] ||
-    typeof property['rich_text'][0]['text']['content'] === 'undefined'
-  ) {
-    return defaultValue
-  }
-  const text: string = property['rich_text'][0]['text']['content']
-  return text || defaultValue
-}
-
-const fetchPage = async (id: string) => {
-  let page: any = null
-  try {
-    page = await notion.pages.retrieve({
-      page_id: id,
-    })
-  } catch {
-    return null
-  }
-  if (!page || Object.keys(page).length === 0) {
-    return null
-  }
-  const p: PageEntity = page
-  if (p.archived) {
-    return null
-  }
-
-  return p
-}
-
-const notifyErrorToSlack = async (text: string, title: string) => {
-  try {
-    await slack.send({ text: `${text}:cry:\n[ *title:${title}* ]` })
-  } catch {
-    // noop
-  }
-}
-
 main().catch((e) => {
-  console.log(e)
+  console.error(e)
 })
