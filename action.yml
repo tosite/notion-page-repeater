@@ -1,0 +1,5 @@
+name: 'Notion Page Repeater'
+description: 'Notion Automatically Repeat Pages'
+runs:
+  using: 'node12'
+  main: 'dist/main.js'

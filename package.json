@@ -1,7 +1,7 @@
 {
   "name": "notion-page-repeater",
   "version": "1.0.0",
-  "description": "Notion Automatically Create Repeat Pages",
+  "description": "Notion Automatically Repeat Pages",
   "main": "dist/main.js",
   "files": [
     "dist/"

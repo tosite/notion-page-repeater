@@ -269,8 +269,7 @@ const parseSelect = <T>(property: any): T | null => {
   if (!property || !property['select'] || typeof property['select']['name'] === 'undefined') {
     return null
   }
-  const text = property['select']['name']
-  return text
+  return property['select']['name']
 }
 
 const parseNumber = (property: any, defaultValue = 0): number => {
