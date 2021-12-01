@@ -67,7 +67,7 @@ interface PageEntity {
 const main = async () => {
   const settings = await fetchSettings()
   for (const setting of settings) {
-    console.log('==== start crating page ========')
+    console.log('==== start creating page ========')
     const prevPage = await fetchPage(setting.prevId)
     let prevRunAt = null
     if (prevPage !== null) {
