@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-explicit-any camelcase ban-ts-comment
+// deno-lint-ignore-file no-explicit-any
 import { Client } from 'https://deno.land/x/notion_sdk/src/mod.ts'
 import dayjs from 'https://cdn.skypack.dev/dayjs?dts'
 
@@ -53,7 +53,9 @@ interface SettingEntity {
 
 interface PageEntity {
   results: any
+  // deno-lint-ignore camelcase
   next_cursor: string | null
+  // deno-lint-ignore camelcase
   has_more: boolean
 }
 
@@ -61,6 +63,7 @@ interface PageEntity {
   archived: boolean
   parent: {
     type: string
+    // deno-lint-ignore camelcase
     database_id: string
   }
   properties: {
@@ -78,6 +81,7 @@ interface PageEntity {
     Tags: {
       id: string
       type: string
+      // deno-lint-ignore camelcase
       multi_select: string[]
     }
   }
@@ -189,7 +193,6 @@ const fetchSettings = async () => {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const pages: any = await notion.databases.query({
-      // @ts-ignore
       database_id: settingDbId,
       filter: {
         and: [{ property: 'enable', checkbox: { equals: true } }],
@@ -219,7 +222,7 @@ const fetchSettings = async () => {
   }
 }
 
-const parseNextRunAt = (span: Span, week: Week | null, hour: number, min: number): any => {
+const parseNextRunAt = (span: Span, week: Week, hour: number, min: number): any => {
   const now = dayjs()
 
   if (span === 'daily') {
@@ -227,7 +230,6 @@ const parseNextRunAt = (span: Span, week: Week | null, hour: number, min: number
   }
 
   if (span === 'weekly') {
-    // @ts-ignore
     let dateDiff = weekList[week] ? weekList[week] - now.day() : 0
     if (dateDiff < 0) {
       dateDiff = 7 + dateDiff
@@ -246,6 +248,11 @@ const parseSettingEntity = (id: string, properties: any): SettingEntity => {
   const title: string = parseTitle(properties['title'], '議事録タイトル')
   const prevId: string = parseText(properties['previous_id'])
   const templateId: string = parseText(properties['template_id'])
+
+  if (week === null) {
+    throw 'invalid week'
+  }
+
   return {
     id: id,
     runAt: parseNextRunAt(span, week, hour, min),
@@ -270,7 +277,6 @@ const updatePrevId = async (id: string, prevId: string) => {
     } = await notion.pages.update({
       page_id: id,
       properties: {
-        // @ts-ignore
         previous_id: {
           rich_text: [
             {
