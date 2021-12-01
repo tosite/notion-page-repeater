@@ -3,5 +3,5 @@ FROM denoland/deno
 USER deno
 WORKDIR /app
 
-COPY ./src/* .
+COPY ./src/* ./
 CMD deno run -A ./index.ts
