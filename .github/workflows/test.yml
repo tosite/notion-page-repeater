@@ -1,0 +1,23 @@
+name: Test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deno-test:
+    name: Deno Test
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Tokyo
+      LANG: ja_JP.UTF-8
+    steps:
+      - run: which unzip > /dev/null || (apt -qqy update && apt -qqy install unzip)
+      - uses: actions/checkout@v2
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - run: deno test -A ./src/
