@@ -7,7 +7,7 @@
 </div>
 
 ## Description
-[Notion](https://www.notion.so/)のページを一定間隔で作成するGitHub Actionsです。
+[Notion](https://www.notion.so/)のページを一定間隔で作成するGitHub Actionsです。  
 定例ミーティングなどの毎回使うページの作成を自動化できます。
 
 ### What you can do🙆‍♂️
