@@ -6,18 +6,18 @@
 
 </div>
 
-## Documents
-- [Sequence](./docs/uml.md)
-- [japanese docs](docs/jp.md)
+## Description
+GitHub Actions to create [Notion](https://www.notion.so/) pages at regular intervals.  
+You can automate the creation of pages that are used every time such as regular meetings.
 
-## What you can do🙆‍♂️
+### What you can do🙆‍♂️
 
 - You can copy the properties of a template page.
   - You can set up participants, tags, and other settings automatically.
 - You can create pages on a daily or weekly basis.
   - You can create pages based on the frequency of your meetings.
 
-## What you can't do🙅‍♂️
+### What you can't do🙅‍♂️
 
 - The contents of the template page cannot be copied.
   - Only properties can be copied.
@@ -26,7 +26,11 @@
   - We'll deal with it soon.
 - We look forward to your contributions😉
 
-## How to use
+## Requirement
+
+GitHub Actions
+
+## Usage
 
 **Notion side settings**
 
@@ -74,13 +78,13 @@ jobs:
           SETTING_DB_ID: ${{ secrets.SETTING_DB_ID }}
 ```
 
-## Pages information
+### Pages information
 
-### Settings page
+#### Settings page
 
 A page to manage the settings for automatic generation.
 
-#### Columns
+##### Columns
 
 |column name|type|required|description|value|
 | --- | --- | --- | --- | --- |
@@ -93,15 +97,27 @@ A page to manage the settings for automatic generation.
 | minute | Number | - | Opening time(minute) | - |
 | previous_id | Text | - | Previous page ID (used by the system) | - |
 
-### Template pages
+#### Template pages
 
 A page that holds the properties of automatically generated pages.  
 The template page ID is held in the configuration page.  
 The page is automatically generated based on the properties of the template page.  
 Note that the Datetime column is required.
 
-### Columns
+#### Columns
 
 |column name|type|required|description|value|
 | --- | --- | --- | --- | --- |
 | Datetime | Date | * | Opening time | - |
+
+## Documents
+- [Sequence](./docs/uml.md)
+- [japanese docs](docs/jp.md)
+
+## Licence
+
+MIT
+
+## Author
+
+[tosite](https://github.com/tosite)
