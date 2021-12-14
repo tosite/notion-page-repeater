@@ -1,13 +1,23 @@
 # notion-page-repeater
 
-## What you can do🙆‍♂️
+<div style="text-align: center;">
+
+![logo](./logo.png)
+
+</div>
+
+## Description
+[Notion](https://www.notion.so/)のページを一定間隔で作成するGitHub Actionsです。
+定例ミーティングなどの毎回使うページの作成を自動化できます。
+
+### What you can do🙆‍♂️
 
 - テンプレートページのプロパティのコピー
     - 参加者やタグ、その他諸々の設定を自動で設定できます
 - 日次・週次でページを作成
     - ミーティングの頻度に合わせてページを作成できます
 
-## What you can't do🙅‍♂️
+### What you can't do🙅‍♂️
 
 - テンプレートページの中身をコピー
     - コピーできるのはプロパティのみです
@@ -16,7 +26,11 @@
     - そのうち対応します
 - We look forward to your contributions😉
 
-## How to use
+## Requirement
+
+GitHub Actions
+
+## Usage
 
 **Notion側の設定**
 
@@ -65,13 +79,13 @@ jobs:
           SETTING_DB_ID: ${{ secrets.SETTING_DB_ID }}
 ```
 
-## Pages information
+### Pages information
 
-### Settings page
+#### Settings page
 
 自動生成する際の設定を管理するページ。
 
-#### Columns
+##### Columns
 
 |column name|type|required|description|value|
 | --- | --- | --- | --- | --- |
@@ -84,15 +98,23 @@ jobs:
 | minute | Number | - | 開催時刻(分) | - |
 | previous_id | Text | - | 前回ページID(システムで使用) | - |
 
-### Template pages
+#### Template pages
 
 自動で生成するページのプロパティを保持するページ。  
 テンプレートページIDは設定ページに保持する。  
 テンプレートページのプロパティを元にページを自動生成する。  
 Datetimeカラムは必須となる点に留意。
 
-### Columns
+#### Columns
 
 |column name|type|required|description|value|
 | --- | --- | --- | --- | --- |
 | Datetime | Date | * | 開催時刻 | - |
+
+## Licence
+
+MIT
+
+## Author
+
+[tosite](https://github.com/tosite)
