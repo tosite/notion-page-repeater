@@ -111,6 +111,9 @@ Datetimeカラムは必須となる点に留意。
 | --- | --- | --- | --- | --- |
 | Datetime | Date | * | 開催時刻 | - |
 
+## Documents
+- [シーケンス図](./uml.md)
+
 ## Licence
 
 MIT
