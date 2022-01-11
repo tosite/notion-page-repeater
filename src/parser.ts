@@ -1,4 +1,4 @@
-import dayjs from 'https://cdn.skypack.dev/dayjs?dts'
+import dayjs from 'dayjs'
 import { Span, Week, weekList } from './interface.ts'
 import { SettingEntry } from './interface.ts'
 

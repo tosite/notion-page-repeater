@@ -1,4 +1,4 @@
-import { Client } from 'https://deno.land/x/notion_sdk/src/mod.ts'
+import { Client } from 'notion_sdk'
 import { parseSettingEntry } from './parser.ts'
 import { SettingEntity, SettingEntry, PageEntity } from './interface.ts'
 

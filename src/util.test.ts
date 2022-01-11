@@ -1,4 +1,4 @@
-import { assertEquals } from 'https://deno.land/std/testing/asserts.ts'
+import { assertEquals } from 'testing/asserts.ts'
 import { okMessage, ngMessage } from './util.ts'
 
 Deno.test('okMessage', () => {
