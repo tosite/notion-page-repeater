@@ -1,3 +1,4 @@
+cov_profile*
 *.log
 .env
 .envrc
