@@ -1,29 +1,33 @@
 # DEVELOPMENT
 
-## Install crewdevio/Trex
+## About "import maps"
 
-For dependency resolution, we use [crewdevio/Trex](https://github.com/crewdevio/Trex); please check the official website and install the CLI.
+We are using [import maps](https://deno.land/manual/linking_to_external_code/import_maps) to resolve dependencies.
 
-```sh
-$ trex --version
-trex:
- v1.x.x 
-Deno:
- v1.x.x
-```
+You can easily manage your version by editing import-map.json. Optionally, you can use [crewdevio/Trex](https://github.com/crewdevio/Trex) to manage import-map.json easily.
 
 ## Dependency resolution
 
-Resolve script dependencies with Trex by running the following command
+You can resolve script dependencies with running the following command.
 
 ```sh
-$ trex install
+make cache
 ```
+
+> **TIPS:** If you have installed trex, you can run `trex install` to get the same effect.
 
 ## Running test scripts
 
-Trex scripts are supported. You can run all the test cases with the following command
+You can run all the test cases with the following command.
 
 ```sh
-trex run test
+make test
+```
+
+## Running script
+
+If you want to simply run the script, you can use the following command.
+
+```sh
+make start
 ```
