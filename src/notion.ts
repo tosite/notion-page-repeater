@@ -15,8 +15,8 @@ export const createPage = async (notion: Client, setting: SettingEntry, template
     })
     return !page || Object.keys(page).length === 0 || !page['id'] ? '' : page['id']
   } catch (e) {
-    console.log(e)
-    return ''
+    console.log(`[ERROR]createPage - code: ${e.code}, message: ${e.message}`)
+    throw e
   }
 }
 

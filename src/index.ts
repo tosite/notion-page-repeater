@@ -81,15 +81,27 @@ const main = async () => {
       'relation',
     ]
     let safeParams: { [index: string]: any } = {}
+    let rawKeys = ''
+    let safeKeys = ''
     for (const [key, value] of Object.entries(templateParams)) {
       const property: { type: string } = value
+      rawKeys += `\n${key} => ${property?.type}`
       if (!unsafeTypes.includes(property?.type)) {
+        safeKeys += `\n${key} => ${property?.type}`
         safeParams[key] = property
       }
     }
 
     // テンプレートページを元に新しいページを作成する
-    const newPageId = await createPage(notion, setting, safeParams, parentDbId)
+    let newPageId = ''
+    try {
+      newPageId = await createPage(notion, setting, safeParams, parentDbId)
+    } catch(e) {
+      console.log('==== raw keys ========', rawKeys)
+      console.log('==== safe keys ========', safeKeys)
+      throw e
+    }
+
     if (newPageId === '') {
       await slack.send(ngMessage('新しいページが作成できませんでした', title)).catch(() => {})
       console.log('[ERROR]Failed creating new page.')
