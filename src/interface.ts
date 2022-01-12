@@ -45,16 +45,6 @@ export interface PageEntity {
         end: string
       }
     }
-    Members: {
-      id: string
-      type: string
-      people: string[]
-    }
-    Tags: {
-      id: string
-      type: string
-      // deno-lint-ignore camelcase
-      multi_select: string[]
-    }
+    [index: string]: any
   }
 }
