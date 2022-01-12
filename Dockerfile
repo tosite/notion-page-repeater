@@ -1,6 +1,12 @@
-FROM denoland/deno
+FROM denoland/deno:1.17.2
+
+RUN apt -qqy update \
+  && apt -qqy install make \
+  && apt clean \
+  && rm -rf /var/lib/apt/lists/*
 
 USER deno
 WORKDIR /app
 COPY ./ /app/
-CMD [ "deno", "run", "-A", "/app/src/index.ts" ]
+
+CMD [ "make", "start" ]

@@ -1,5 +1,5 @@
-import { assertThrows } from 'https://deno.land/std/testing/asserts.ts'
-import { spy, assertSpyCall } from 'https://deno.land/x/mock/mod.ts'
+import { assertThrows } from 'testing/asserts.ts'
+import { spy, assertSpyCall } from 'mock'
 import { Slack } from './slack.ts'
 Deno.test('throws error, when webhook url is empty', () => {
   assertThrows(() => new Slack({ url: '' }), Error, 'Slack Incoming Webhook URL is empty')

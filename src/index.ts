@@ -1,5 +1,5 @@
-import { Client } from 'https://deno.land/x/notion_sdk/src/mod.ts'
-import dayjs from 'https://cdn.skypack.dev/dayjs?dts'
+import { Client } from 'notion_sdk'
+import dayjs from 'dayjs'
 import { okMessage, ngMessage } from './util.ts'
 import { Slack } from './slack.ts'
 import { fetchSettings, fetchPage, createPage, updatePrevId } from './notion.ts'
