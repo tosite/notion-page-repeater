@@ -24,6 +24,14 @@
     - 毎回作成されたページからテンプレートページを選択して雛形を流し込んでください
 - 祝日のスキップ
     - そのうち対応します
+- いくつかのプロパティのコピー
+    - created_time
+    - last_edited_time
+    - created_by
+    - last_edited_by
+    - formula
+    - rollup
+    - relation
 - We look forward to your contributions😉
 
 ## Requirement

@@ -24,6 +24,14 @@ You can automate the creation of pages that are used every time such as regular 
   - Select a template page from the pages created each time and pour in the template.
 - Cannot skip holidays.
   - We'll deal with it soon.
+- Some properties cannot copied.
+  - created_time
+  - last_edited_time
+  - created_by
+  - last_edited_by
+  - formula
+  - rollup
+  - relation
 - We look forward to your contributions😉
 
 ## Requirement
@@ -112,7 +120,8 @@ Note that the Datetime column is required.
 
 ## Documents
 - [Sequence](./docs/uml.md)
-- [japanese docs](docs/jp.md)
+- [japanese docs](./docs/jp.md)
+- [development](./docs/development.md)
 
 ## Licence
 
