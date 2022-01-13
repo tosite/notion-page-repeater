@@ -15,7 +15,7 @@ const main = async () => {
   const settings = await fetchSettings(notion, settingDbId)
   for (const setting of settings.entries) {
     console.log('==== start creating page ========')
-    const prevPage = await fetchPage(notion, setting.prevId)
+    const prevPage = setting?.prevId ? await fetchPage(notion, setting.prevId) : null
     let prevRunAt = null
     if (prevPage !== null) {
       const datetimeProperty = prevPage.properties['Datetime']
@@ -71,6 +71,7 @@ const main = async () => {
       continue
     }
 
+    console.log('==== sanitize template params ========')
     const unsafeTypes = [
       'created_time',
       'last_edited_time',
@@ -95,6 +96,8 @@ const main = async () => {
     // テンプレートページを元に新しいページを作成する
     let newPageId = ''
     try {
+      console.log('==== raw keys ========', rawKeys)
+      console.log('==== safe keys ========', safeKeys)
       newPageId = await createPage(notion, setting, safeParams, parentDbId)
     } catch(e) {
       console.log('==== raw keys ========', rawKeys)
