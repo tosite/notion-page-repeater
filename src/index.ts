@@ -91,9 +91,10 @@ const main = async () => {
       if (!unsafeTypes.includes(property?.type)) {
         safeKeys += `\n${key} => ${property?.type}`
         safeParams[key] = property
-      }
-      if (property?.type === 'title') {
-        safeParams[key]['title'] = title
+        if (property?.type === 'title') {
+          safeParams[key]['title'][0]['plain_text'] = title
+          safeParams[key]['title'][0]['text']['content'] = title
+        }
       }
     }
 
