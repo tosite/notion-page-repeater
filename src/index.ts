@@ -51,6 +51,7 @@ const main = async () => {
       console.log('[ERROR]template ID is empty.')
       continue
     }
+    console.log('==== fetching template page ========')
     const templatePage = await fetchPage(notion, setting.templateId)
     if (!templatePage) {
       await slack.send(ngMessage('テンプレートページが見つかりませんでした', title)).catch(() => {})
@@ -96,8 +97,6 @@ const main = async () => {
     // テンプレートページを元に新しいページを作成する
     let newPageId = ''
     try {
-      console.log('==== raw keys ========', rawKeys)
-      console.log('==== safe keys ========', safeKeys)
       newPageId = await createPage(notion, setting, safeParams, parentDbId)
     } catch(e) {
       console.log('==== raw keys ========', rawKeys)
