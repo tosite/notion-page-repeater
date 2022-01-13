@@ -92,6 +92,9 @@ const main = async () => {
         safeKeys += `\n${key} => ${property?.type}`
         safeParams[key] = property
       }
+      if (property?.type === 'title') {
+        safeParams[key]['title'] = title
+      }
     }
 
     // テンプレートページを元に新しいページを作成する
