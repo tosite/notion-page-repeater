@@ -9,4 +9,4 @@ USER deno
 WORKDIR /app
 COPY ./ /app/
 
-CMD [ "make", "start" ]
+CMD cd /app && make start
