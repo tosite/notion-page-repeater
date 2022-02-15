@@ -1,6 +1,6 @@
 import { Client } from 'notion_sdk'
 import dayjs from 'dayjs'
-import { okMessage, ngMessage } from './util.ts'
+import { okMessage, ngMessage, isTarget } from './util.ts'
 import { Slack } from './slack.ts'
 import { fetchSettings, fetchPage, createPage, updatePrevId } from './notion.ts'
 
@@ -24,25 +24,11 @@ const main = async () => {
       }
     }
 
-    // 実行対象が今日・明日のものだけを取得
-    if (
-      setting.runAt.format('YYYYMMDD') !== dayjs().format('YYYYMMDD') &&
-      setting.runAt.format('YYYYMMDD') !== dayjs().add(1, 'day').format('YYYYMMDD')
-    ) {
+    // TODO: 祝日機能の追加
+    if (!isTarget(setting.runAt.format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'), prevRunAt?.format('YYYY-MM-DD'), true)) {
       continue
     }
-    console.log(
-      !prevRunAt ? 'not set' : prevRunAt.format('YYYY-MM-DD HH:mm'),
-      ' <=> ',
-      setting.runAt.format('YYYY-MM-DD HH:mm'),
-      'isSame = ',
-      prevRunAt !== null && setting.runAt.format('YYYYMMDDHHmm') === prevRunAt.format('YYYYMMDDHHmm'),
-    )
-    // 日付と1つ前のIDから該当のページがすでに作成済みかどうか判定する
-    if (prevRunAt !== null && setting.runAt.format('YYYYMMDDHHmm') === prevRunAt.format('YYYYMMDDHHmm')) {
-      console.log('[SKIP]page is already exist.')
-      continue
-    }
+
     const title = `${setting.title} ${setting.runAt.format('YYYY-MM-DD')}`
 
     // テンプレートページを取得・整形
