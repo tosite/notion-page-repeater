@@ -1,6 +1,6 @@
 import { Client } from 'notion_sdk'
 import dayjs from 'dayjs'
-import { okMessage, ngMessage, isTarget } from './util.ts'
+import {okMessage, ngMessage, isTarget, sanitizeProperties} from './util.ts'
 import { Slack } from './slack.ts'
 import { fetchSettings, fetchPage, createPage, updatePrevId } from './notion.ts'
 
@@ -59,38 +59,16 @@ const main = async () => {
     }
 
     console.log('==== sanitize template params ========')
-    const unsafeTypes = [
-      'created_time',
-      'last_edited_time',
-      'created_by',
-      'last_edited_by',
-      'formula',
-      'rollup',
-      'relation',
-    ]
-    let safeParams: { [index: string]: any } = {}
-    let rawKeys = ''
-    let safeKeys = ''
-    for (const [key, value] of Object.entries(templateParams)) {
-      const property: { type: string } = value
-      rawKeys += `\n${key} => ${property?.type}`
-      if (!unsafeTypes.includes(property?.type)) {
-        safeKeys += `\n${key} => ${property?.type}`
-        safeParams[key] = property
-        if (property?.type === 'title') {
-          safeParams[key]['title'][0]['plain_text'] = title
-          safeParams[key]['title'][0]['text']['content'] = title
-        }
-      }
-    }
+    const sanitizeParams = sanitizeProperties(templateParams, title)
+    const safeParams = sanitizeParams.safeParams
 
     // テンプレートページを元に新しいページを作成する
     let newPageId = ''
     try {
       newPageId = await createPage(notion, setting, safeParams, parentDbId)
     } catch(e) {
-      console.log('==== raw keys ========', rawKeys)
-      console.log('==== safe keys ========', safeKeys)
+      console.log('==== raw keys ========', sanitizeParams.rawKeys)
+      console.log('==== safe keys ========', sanitizeParams.safeKeys)
       throw e
     }
 

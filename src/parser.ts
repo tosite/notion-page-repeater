@@ -1,23 +1,20 @@
 import dayjs from 'dayjs'
-import { Span, Week, weekList } from './interface.ts'
-import { SettingEntry } from './interface.ts'
+import {Span, Week, weekList} from './interface.ts'
+import {SettingEntry} from './interface.ts'
 
-export const parseNextRunAt = (span: Span, week: Week | null, hour: number, min: number): any => {
-  const now = dayjs()
+export const parseNextRunAt = (span: Span, week: Week | null, hour: number, min: number, now?: string): any => {
+  const n = now ? dayjs(now) : dayjs()
 
   if (span === 'daily') {
-    return now.add(1, 'day').hour(hour).minute(min)
+    return n.add(1, 'day').hour(hour).minute(min)
   }
 
-  if (span === 'weekly') {
-    let dateDiff = week && weekList[week] ? weekList[week] - now.day() : 0
-    if (dateDiff < 0) {
-      dateDiff = 7 + dateDiff
-    }
-    return now.add(dateDiff, 'day').hour(hour).minute(min)
+  // weekly
+  let dateDiff = week && weekList[week] ? weekList[week] - n.day() : 0
+  if (dateDiff < 0) {
+    dateDiff = 7 + dateDiff
   }
-
-  return null
+  return n.add(dateDiff, 'day').hour(hour).minute(min)
 }
 
 export const parseSelect = <T>(property: any): T | null => {
