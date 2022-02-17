@@ -5,7 +5,7 @@ export const ngMessage = (text: string, title: string) => ({
   text: [`⛔ ${text}`, `[ *title:${title}* ]`].join('\n'),
 })
 
-export const isTarget = (target: string, now: string, previous: string|null|undefined, skipHoliday: boolean): boolean => {
+export const isTarget = (target: string, now: string, previous: string | null | undefined, skipHoliday: boolean): boolean => {
   const t = dayjs(target)
   const n = dayjs(now)
   const p = !previous ? null : dayjs(previous)
@@ -28,4 +28,32 @@ export const isTarget = (target: string, now: string, previous: string|null|unde
     return false
   }
   return true
+}
+
+export const sanitizeProperties = (templateParams: { [index: string]: any }, title: string): { "rawKeys": string, "safeKeys": string, "safeParams": { [index: string]: any } } => {
+  const unsafeTypes = [
+    'created_time',
+    'last_edited_time',
+    'created_by',
+    'last_edited_by',
+    'formula',
+    'rollup',
+    'relation',
+  ]
+  let safeParams: { [index: string]: any } = {}
+  let rawKeys = ''
+  let safeKeys = ''
+  for (const [key, value] of Object.entries(templateParams)) {
+    const property: { type: string } = value
+    rawKeys += `\n${key} => ${property?.type}`
+    if (!unsafeTypes.includes(property?.type)) {
+      safeKeys += `\n${key} => ${property?.type}`
+      safeParams[key] = property
+      if (property?.type === 'title') {
+        safeParams[key]['title'][0]['plain_text'] = title
+        safeParams[key]['title'][0]['text']['content'] = title
+      }
+    }
+  }
+  return {"rawKeys": rawKeys, "safeKeys": safeKeys, "safeParams": safeParams}
 }
