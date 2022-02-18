@@ -3,6 +3,7 @@
     "dayjs": "https://cdn.skypack.dev/dayjs@1.10.7?dts",
     "mock": "https://deno.land/x/mock@0.12.2/mod.ts",
     "notion_sdk": "https://deno.land/x/notion_sdk@v0.4.9/src/mod.ts",
-    "testing/": "https://deno.land/std@0.120.0/testing/"
+    "testing/": "https://deno.land/std@0.120.0/testing/",
+    "TestSuite": "https://deno.land/x/test_suite@0.9.5/mod.ts"
   }
 }
