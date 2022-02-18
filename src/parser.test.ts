@@ -6,23 +6,35 @@ Deno.test('parseNextRunAt dailyの場合 1日後の日付が返ってくるこ�
   assertEquals(res.format('YYYY-MM-DD HH:mm'), '2022-01-02 14:30')
 })
 
+// weekly 単数
 Deno.test('parseNextRunAt weeklyの場合 まだ対象曜日を迎えていない場合 今週の日付が返ってくること', () => {
-  const res = parseNextRunAt('weekly', 'Fri', 14, 30, '20220103')
+  const res = parseNextRunAt('weekly', ['Fri'], 14, 30, '20220103')
   assertEquals(res.format('YYYY-MM-DD HH:mm'), '2022-01-07 14:30')
 })
 
 Deno.test('parseNextRunAt weeklyの場合 対象曜日が当日の場合 今週の日付が返ってくること', () => {
-  const res = parseNextRunAt('weekly', 'Fri', 14, 30, '20220107')
+  const res = parseNextRunAt('weekly', ['Fri'], 14, 30, '20220107')
   assertEquals(res.format('YYYY-MM-DD HH:mm'), '2022-01-07 14:30')
 })
 
 Deno.test('parseNextRunAt weeklyの場合 すでに対象曜日を迎えた場合 来週の日付が返ってくること', () => {
-  const res = parseNextRunAt('weekly', 'Mon', 14, 30, '20220107')
+  const res = parseNextRunAt('weekly', ['Mon'], 14, 30, '20220107')
   assertEquals(res.format('YYYY-MM-DD HH:mm'), '2022-01-10 14:30')
 })
 
+// weekly 複数
+Deno.test('parseNextRunAt weeklyの場合 まだ対象曜日を迎えていない場合 今週の日付が返ってくること', () => {
+  const res = parseNextRunAt('weekly', ['Wed', 'Fri'], 14, 30, '20220103')
+  assertEquals(res.format('YYYY-MM-DD HH:mm'), '2022-01-05 14:30')
+})
+
+Deno.test('parseNextRunAt weeklyの場合 対象曜日が当日の場合 今週の日付が返ってくること', () => {
+  const res = parseNextRunAt('weekly', ['Wed', 'Fri'], 14, 30, '20220107')
+  assertEquals(res.format('YYYY-MM-DD HH:mm'), '2022-01-07 14:30')
+})
+
 Deno.test('parseNextRunAt weeklyの場合 すでに対象曜日を迎えた場合 来週の日付が返ってくること', () => {
-  const res = parseNextRunAt('weekly', 'Mon', 14, 30, '20220107')
+  const res = parseNextRunAt('weekly', ['Mon', 'Wed'], 14, 30, '20220107')
   assertEquals(res.format('YYYY-MM-DD HH:mm'), '2022-01-10 14:30')
 })
 
