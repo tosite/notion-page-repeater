@@ -95,16 +95,17 @@ jobs:
 
 ##### Columns
 
-|column name|type|required|description|value|
-| --- | --- | --- | --- | --- |
-| title | Title | * | ページのタイトルに使用 | - |
-| template_id | Text | * | ページ複製元のID | - |
-| enable | Checkbox | * | チェック時に処理対象となる | - |
-| interval | Select | * | 実行間隔 | daily, weekly |
-| week | Select | * (interval=weekly) | 開催曜日 | Sun, Mon, Tue, Wed, Thu, Fri, Sat |
-| hour | Number | - | 開催時刻(時) | - |
-| minute | Number | - | 開催時刻(分) | - |
-| previous_id | Text | - | 前回ページID(システムで使用) | - |
+|column name| type               |required| description        |value|
+| --- |--------------------| --- |--------------------| --- |
+| title | Title              | * | ページのタイトルに使用        | - |
+| template_id | Text               | * | ページ複製元のID          | - |
+| enable | Checkbox           | * | チェック時に処理対象となる      | - |
+| interval | Select | * | 実行間隔               | daily, weekly |
+| week | Select/MultiSelect             | * (interval=weekly) | 開催曜日               | Sun, Mon, Tue, Wed, Thu, Fri, Sat |
+| run_holiday | Boolean            | -      | ONの場合、休日もページが生成される | - |
+| hour | Number             | - | 開催時刻(時)            | - |
+| minute | Number             | - | 開催時刻(分)            | - |
+| previous_id | Text               | - | 前回ページID(システムで使用)   | - |
 
 #### Template pages
 
