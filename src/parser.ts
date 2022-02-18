@@ -83,14 +83,10 @@ export const parseText = (property: any, defaultValue = ''): string => {
 }
 
 export const parseBool = (property: any, defaultValue = false): boolean => {
-  if (
-    !property ||
-    !property['run_holiday'] ||
-    typeof property['run_holiday']['checkbox'] === 'undefined'
-  ) {
+  if (!property || typeof property['checkbox'] === 'undefined') {
     return defaultValue
   }
-  return property['run_holiday']['checkbox']
+  return property['checkbox']
 }
 
 export const parseSettingEntry = (id: string, properties: any): SettingEntry => {

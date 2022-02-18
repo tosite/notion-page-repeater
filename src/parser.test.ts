@@ -1,5 +1,5 @@
 import {assertEquals} from 'testing/asserts.ts'
-import {parseNextRunAt, parseNumber, parseSelect, parseTitle} from './parser.ts';
+import {parseBool, parseNextRunAt, parseNumber, parseSelect, parseTitle} from './parser.ts';
 import {describe, it} from 'TestSuite'
 
 describe("parseNextRunAt#daily", () => {
@@ -161,6 +161,41 @@ describe("parseTitle", () => {
       const res = parseTitle({title: [{plain_text: 'title text'}]})
       assertEquals(res, 'title text')
 
+    })
+  })
+})
+
+describe("parseBool", () => {
+  describe("パースに失敗した場合", () => {
+    it("デフォルト値を指定しない場合、デフォルト値が返ってくること", () => {
+      const testCases = [
+        undefined,
+        null,
+        {checkbox: undefined},
+      ]
+      for (const testCase of testCases) {
+        const res = parseBool(testCase)
+        assertEquals(res, false)
+      }
+    })
+
+    it("デフォルト値を指定した場合、デフォルト値が返ってくること", () => {
+      const testCases = [
+        undefined,
+        null,
+        {checkbox: undefined},
+      ]
+      for (const testCase of testCases) {
+        const res = parseBool(testCase, true)
+        assertEquals(res, true)
+      }
+    })
+  })
+
+  describe("パースに成功した場合", () => {
+    it("値が返ってくること", () => {
+      const res = parseBool({checkbox: true})
+      assertEquals(res, true)
     })
   })
 })
