@@ -94,17 +94,17 @@ A page to manage the settings for automatic generation.
 
 ##### Columns
 
-|column name|type|required|description|value|
-| --- | --- | --- | --- | --- |
-| title | Title | * | Used for the title of the page | - |
-| template_id | Text | * | ID of the page duplicator | - |
-| enable | Checkbox | * | To be processed when checking | - |
-| interval | Select | * | run interval | daily, weekly |
-| week | Select | * (interval=weekly) | Day of the week | Sun, Mon, Tue, Wed, Thu, Fri, Sat |
-| hour | Number | - | Opening time(hour) | - |
-| minute | Number | - | Opening time(minute) | - |
-| previous_id | Text | - | Previous page ID (used by the system) | - |
-
+| column name | type               | required | description                                         |value|
+|-------------|--------------------|--------|-----------------------------------------------------| --- |
+| title       | Title              | *      | Used for the title of the page                      | - |
+| template_id | Text               | *      | ID of the page duplicator                           | - |
+| enable      | Checkbox           | *      | To be processed when checking                       | - |
+| interval    | Select             | *      | run interval                                        | daily, weekly |
+| week        | Select/MultiSelect | * (interval=weekly) | Day of the week                                     | Sun, Mon, Tue, Wed, Thu, Fri, Sat |
+| run_holiday | Boolean            | -      | When on, the page will be generated even on holidays | - |
+| hour        | Number             | -      | Opening time(hour)                                  | - |
+| minute      | Number             | -      | Opening time(minute)                                | - |
+| previous_id | Text               | -      | Previous page ID (used by the system)               | - |
 #### Template pages
 
 A page that holds the properties of automatically generated pages.  
