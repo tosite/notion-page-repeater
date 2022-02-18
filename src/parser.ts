@@ -82,6 +82,13 @@ export const parseText = (property: any, defaultValue = ''): string => {
   return text || defaultValue
 }
 
+export const parseBool = (property: any, defaultValue = false): boolean => {
+  if (!property || typeof property['checkbox'] === 'undefined') {
+    return defaultValue
+  }
+  return property['checkbox']
+}
+
 export const parseSettingEntry = (id: string, properties: any): SettingEntry => {
   const span = parseSelect<Span>(properties['interval']) || 'weekly'
   const wp = properties['week']
@@ -98,6 +105,7 @@ export const parseSettingEntry = (id: string, properties: any): SettingEntry => 
   const title: string = parseTitle(properties['title'], '議事録タイトル')
   const prevId: string = parseText(properties['previous_id'])
   const templateId: string = parseText(properties['template_id'])
+  const runHoliday = parseBool(properties['run_holiday'], false)
 
   return {
     id,
@@ -105,5 +113,6 @@ export const parseSettingEntry = (id: string, properties: any): SettingEntry => 
     title: title,
     prevId: prevId,
     templateId: templateId,
+    skipHoliday: !runHoliday
   }
 }

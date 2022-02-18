@@ -16,6 +16,7 @@ export interface SettingEntry {
   title: string
   prevId: string
   templateId: string
+  skipHoliday: boolean
 }
 
 export interface SettingEntity {
