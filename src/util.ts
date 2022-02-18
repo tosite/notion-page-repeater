@@ -1,5 +1,13 @@
 import dayjs from 'dayjs'
 
+export interface SanitizeProperties {
+  rawKeys: string
+  safeKeys: string
+  safeParams: {
+    [index: string]: any
+  }
+}
+
 export const okMessage = (text: string) => ({text: `✅ ${text}`})
 export const ngMessage = (text: string, title: string) => ({
   text: [`⛔ ${text}`, `[ *title:${title}* ]`].join('\n'),
@@ -30,7 +38,7 @@ export const isTarget = (target: string, now: string, previous: string | null | 
   return true
 }
 
-export const sanitizeProperties = (templateParams: { [index: string]: any }, title: string): { "rawKeys": string, "safeKeys": string, "safeParams": { [index: string]: any } } => {
+export const sanitizeProperties = (templateParams: { [index: string]: any }, title: string): SanitizeProperties => {
   const unsafeTypes = [
     'created_time',
     'last_edited_time',
@@ -55,5 +63,5 @@ export const sanitizeProperties = (templateParams: { [index: string]: any }, tit
       }
     }
   }
-  return {"rawKeys": rawKeys, "safeKeys": safeKeys, "safeParams": safeParams}
+  return {rawKeys: rawKeys, safeKeys: safeKeys, safeParams: safeParams}
 }
