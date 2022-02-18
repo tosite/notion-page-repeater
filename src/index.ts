@@ -25,7 +25,7 @@ const main = async () => {
     }
 
     // TODO: 祝日機能の追加
-    if (!isTarget(setting.runAt.format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'), prevRunAt?.format('YYYY-MM-DD'), true)) {
+    if (!isTarget(setting.runAt.format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'), prevRunAt?.format('YYYY-MM-DD'), setting.skipHoliday)) {
       continue
     }
 
