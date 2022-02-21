@@ -48,9 +48,9 @@ export const sanitizeProperties = (templateParams: { [index: string]: any }, tit
   let safeKeys = []
   for (const [key, value] of Object.entries(templateParams)) {
     const property: { type: string } = value
-    rawKeys.push(`${key} => ${property?.type}`)
+    rawKeys.push(`'${key}' => ${property?.type}`)
     if (!unsafeTypes.includes(property?.type)) {
-      safeKeys.push(`${key} => ${property?.type}`)
+      safeKeys.push(`'${key}' => ${property?.type}`)
       safeParams[key] = property
       if (property?.type === 'title') {
         safeParams[key]['title'][0]['plain_text'] = title
