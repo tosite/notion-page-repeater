@@ -12,9 +12,9 @@ if (!settingDbId) {
 }
 
 const main = async () => {
+  console.log('==== start creating page =============')
   const settings = await fetchSettings(notion, settingDbId)
   for (const setting of settings.entries) {
-    console.log('==== start creating page ========')
     const prevPage = setting?.prevId ? await fetchPage(notion, setting.prevId) : null
     let prevRunAt = null
     if (prevPage !== null) {
@@ -37,7 +37,9 @@ const main = async () => {
       console.log('[ERROR]template ID is empty.')
       continue
     }
-    console.log('==== fetching template page ========')
+    console.log('  end.')
+
+    console.log('==== fetching template page ==========')
     const templatePage = await fetchPage(notion, setting.templateId)
     if (!templatePage) {
       await slack.send(ngMessage('テンプレートページが見つかりませんでした', title)).catch(() => {})
@@ -57,19 +59,18 @@ const main = async () => {
       console.log('[ERROR]template-params parse error.')
       continue
     }
+    console.log('  end.')
 
     console.log('==== sanitize template params ========')
-    const sanitizeParams = sanitizeProperties(templateParams, title)
-    const safeParams = sanitizeParams.safeParams
+    const safeParams = sanitizeProperties(templateParams, title)
 
     // テンプレートページを元に新しいページを作成する
     let newPageId = ''
     try {
       newPageId = await createPage(notion, setting, safeParams, parentDbId)
     } catch(e) {
-      console.log('==== raw keys ========', sanitizeParams.rawKeys)
-      console.log('==== safe keys ========', sanitizeParams.safeKeys)
-      throw e
+      console.log('[ERROR]properties cannot added.')
+      continue
     }
 
     if (newPageId === '') {
@@ -77,6 +78,7 @@ const main = async () => {
       console.log('[ERROR]Failed creating new page.')
       continue
     }
+    console.log('  end.')
 
     // 新しいページIDで設定を上書き
     await updatePrevId(notion, setting.id, newPageId)
@@ -93,7 +95,7 @@ const main = async () => {
         ),
       )
       .catch(() => {})
-    console.log('==== finish creating page =========')
+    console.log('==== finish creating page ============')
   }
 }
 
