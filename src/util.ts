@@ -58,6 +58,7 @@ export const sanitizeProperties = (templateParams: { [index: string]: any }, tit
       }
     }
   }
-  console.log(`  raw keys = ${rawKeys.join(', ')}, safe keys = ${safeKeys.join(', ')}`)
+  console.log(`  raw keys  = ${rawKeys.join(', ')}`)
+  console.log(`  safe keys = ${safeKeys.join(', ')}`)
   return safeParams
 }
