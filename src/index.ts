@@ -12,7 +12,7 @@ if (!settingDbId) {
 }
 
 const main = async () => {
-  console.log('==== start creating page ========')
+  console.log('==== start creating page =============')
   const settings = await fetchSettings(notion, settingDbId)
   for (const setting of settings.entries) {
     const prevPage = setting?.prevId ? await fetchPage(notion, setting.prevId) : null
@@ -39,7 +39,7 @@ const main = async () => {
     }
     console.log('  end.')
 
-    console.log('==== fetching template page ========')
+    console.log('==== fetching template page ==========')
     const templatePage = await fetchPage(notion, setting.templateId)
     if (!templatePage) {
       await slack.send(ngMessage('テンプレートページが見つかりませんでした', title)).catch(() => {})
@@ -95,7 +95,7 @@ const main = async () => {
         ),
       )
       .catch(() => {})
-    console.log('==== finish creating page =========')
+    console.log('==== finish creating page ============')
   }
 }
 
