@@ -18,6 +18,9 @@ export const isTarget = (target: string, now: string, previous: string | null | 
   const n = dayjs(now)
   const p = !previous ? null : dayjs(previous)
 
+  const f = 'YYYY-MM-DD HH:mm:ss'
+  console.log(`  isTarget: today = ${n.format(f)}, target = ${t.format(f)}, previous = ${!p ? 'null' : p.format(f)}`)
+
   if (skipHoliday && ([0, 6].includes(t.day()) || [0, 6].includes(n.day()))) {
     console.log('[SKIP]today is holiday.')
     return false

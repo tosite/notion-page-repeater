@@ -12,9 +12,9 @@ if (!settingDbId) {
 }
 
 const main = async () => {
+  console.log('==== start creating page ========')
   const settings = await fetchSettings(notion, settingDbId)
   for (const setting of settings.entries) {
-    console.log('==== start creating page ========')
     const prevPage = setting?.prevId ? await fetchPage(notion, setting.prevId) : null
     let prevRunAt = null
     if (prevPage !== null) {

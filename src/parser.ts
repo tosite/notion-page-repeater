@@ -107,6 +107,8 @@ export const parseSettingEntry = (id: string, properties: any): SettingEntry => 
   const templateId: string = parseText(properties['template_id'])
   const runHoliday = parseBool(properties['run_holiday'], false)
 
+  console.log(`  title = ${title}, span = ${span}, week = ${!weeks ? 'null' : weeks.join(", ")}, holiday = ${!runHoliday ? 'skip' : 'run'}`)
+
   return {
     id,
     runAt: parseNextRunAt(span, weeks, hour, min),
