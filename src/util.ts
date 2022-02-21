@@ -1,13 +1,5 @@
 import dayjs from 'dayjs'
 
-export interface SanitizeProperties {
-  rawKeys: string
-  safeKeys: string
-  safeParams: {
-    [index: string]: any
-  }
-}
-
 export const okMessage = (text: string) => ({text: `✅ ${text}`})
 export const ngMessage = (text: string, title: string) => ({
   text: [`⛔ ${text}`, `[ *title:${title}* ]`].join('\n'),
@@ -41,7 +33,7 @@ export const isTarget = (target: string, now: string, previous: string | null | 
   return true
 }
 
-export const sanitizeProperties = (templateParams: { [index: string]: any }, title: string): SanitizeProperties => {
+export const sanitizeProperties = (templateParams: { [index: string]: any }, title: string): { [index: string]: any } => {
   const unsafeTypes = [
     'created_time',
     'last_edited_time',
@@ -52,13 +44,13 @@ export const sanitizeProperties = (templateParams: { [index: string]: any }, tit
     'relation',
   ]
   let safeParams: { [index: string]: any } = {}
-  let rawKeys = ''
-  let safeKeys = ''
+  let rawKeys = []
+  let safeKeys = []
   for (const [key, value] of Object.entries(templateParams)) {
     const property: { type: string } = value
-    rawKeys += `\n${key} => ${property?.type}`
+    rawKeys.push(`${key} => ${property?.type}`)
     if (!unsafeTypes.includes(property?.type)) {
-      safeKeys += `\n${key} => ${property?.type}`
+      safeKeys.push(`${key} => ${property?.type}`)
       safeParams[key] = property
       if (property?.type === 'title') {
         safeParams[key]['title'][0]['plain_text'] = title
@@ -66,5 +58,6 @@ export const sanitizeProperties = (templateParams: { [index: string]: any }, tit
       }
     }
   }
-  return {rawKeys: rawKeys, safeKeys: safeKeys, safeParams: safeParams}
+  console.log(`  raw keys = ${rawKeys.join(', ')}, safe keys = ${safeKeys.join(', ')}`)
+  return safeParams
 }

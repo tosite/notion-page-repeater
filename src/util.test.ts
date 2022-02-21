@@ -84,23 +84,10 @@ Deno.test('コピーできないパラメータが含まれる場合 サニタ�
     "rollup": {type: 'rollup', rollup: {type: 'date', date: 'null', function: 'earliest_date'}},
     "relation": {type: 'relation', relation: []},
   }
-  const rawKeys = [
-    '',
-    'created time => created_time',
-    'last edited time => last_edited_time',
-    'created by => created_by',
-    'last edited by => last_edited_by',
-    'formula => formula',
-    'rollup => rollup',
-    'relation => relation',
-  ].join("\n")
-  const safeKeys = [].join("\n")
 
   const res = sanitizeProperties(params, 'page title')
 
-  assertEquals(res.safeParams, {})
-  assertEquals(res.rawKeys, rawKeys)
-  assertEquals(res.safeKeys, safeKeys)
+  assertEquals(res, {})
 })
 
 Deno.test('コピーできるパラメータが含まれる場合 サニタイズされること', () => {
@@ -115,26 +102,12 @@ Deno.test('コピーできるパラメータが含まれる場合 サニタイ�
     "safe param": {type: 'multi_select', multi_select: [{name: 'select', color: 'orange'}]},
     "title": {type: 'title', title: [{type: 'text', text: {'content': 'meeting title'}, plain_text: 'meeting title'}]},
   }
-  const rawKeys = [
-    '',
-    'created time => created_time',
-    'last edited time => last_edited_time',
-    'created by => created_by',
-    'last edited by => last_edited_by',
-    'formula => formula',
-    'rollup => rollup',
-    'relation => relation',
-    'safe param => multi_select',
-    'title => title',
-  ].join("\n")
-  const safeKeys = ['', 'safe param => multi_select', 'title => title'].join("\n")
   const expect = {
     "safe param": {type: 'multi_select', multi_select: [{name: 'select', color: 'orange'}]},
-    "title": {type: 'title', title: [{type: 'text', text: {'content': 'page title'}, plain_text: 'page title'}]}  }
+    "title": {type: 'title', title: [{type: 'text', text: {'content': 'page title'}, plain_text: 'page title'}]}
+  }
 
   const res = sanitizeProperties(params, 'page title')
 
-  assertEquals(res.safeParams, expect)
-  assertEquals(res.rawKeys, rawKeys)
-  assertEquals(res.safeKeys, safeKeys)
+  assertEquals(res, expect)
 })
